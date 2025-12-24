@@ -4,6 +4,8 @@ A precise movement utility for Counter-Strike 1.6 that tracks scroll input timin
 
 Kind of an alternative to kzrush's /showpre, also shows scroll step count.
 
+Download the compiled plugin here https://github.com/frussif/frupre/blob/main/frupre.amxx.
+
 ## ⚙️ CVARs
 
 | CVAR | Default | Description |

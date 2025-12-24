@@ -2,6 +2,8 @@
 
 A precise movement utility for Counter-Strike 1.6 that tracks scroll input timing, Frames On Ground (FOG), and real-time velocity.
 
+Kind of an alternative to kzrush's /showpre, also shows scroll step count.
+
 ## ⚙️ CVARs
 
 | CVAR | Default | Description |

@@ -10,7 +10,7 @@ new g_staticSpeed[33]
 new p_enabled, p_show_jump, p_show_duck, p_show_fog, p_speed_mode, p_speed_type, p_height
 
 public plugin_init() {
-    register_plugin("Frupre Speed Logic", "4.9", "Custom")
+    register_plugin("Frupre Static Override", "5.0", "Custom")
     register_forward(FM_PlayerPreThink, "fwd_PlayerPreThink")
     
     p_enabled      = register_cvar("frupre_enable", "1")
@@ -18,7 +18,7 @@ public plugin_init() {
     p_show_duck    = register_cvar("frupre_duck", "1")
     p_show_fog     = register_cvar("frupre_fog", "1")
     p_speed_mode   = register_cvar("frupre_speed", "1")      // 0=Off, 1=Live, 2=Static
-    p_speed_type   = register_cvar("frupre_speed_type", "1") // 1=Horizontal (XY), 2=3D (XYZ)
+    p_speed_type   = register_cvar("frupre_speed_type", "1") // 1=Horizontal, 2=3D
     p_height       = register_cvar("frupre_height", "12")
 }
 
@@ -44,7 +44,7 @@ public fwd_PlayerPreThink(id) {
         }
         if (!(flags & FL_DUCKING) && g_dFire[id] == 0) { 
             g_dFire[id] = g_dCount[id]; g_dFinalFOG[id] = g_dFOG[id]; 
-            g_staticSpeed[id] = calculate_speed(id)
+            g_staticSpeed[id] = calculate_speed(id) // Capture even if FOG is high
         }
         g_lastScrollTime[id] = fTime
     }
@@ -59,7 +59,7 @@ public fwd_PlayerPreThink(id) {
         }
         if ((flags & FL_ONGROUND) && g_jFire[id] == 0) { 
             g_jFire[id] = g_jCount[id]; g_jFinalFOG[id] = g_jFOG[id]; 
-            g_staticSpeed[id] = calculate_speed(id)
+            g_staticSpeed[id] = calculate_speed(id) // Capture even if FOG is high
         }
         g_lastScrollTime[id] = fTime
     }
@@ -83,27 +83,30 @@ update_display(id, Float:fTime) {
     
     szStats[0] = 0; szFog[0] = 0; szSpeed[0] = 0
 
-    if (showStats) {
-        if (g_lastType[id] == 1 && g_jCount[id] >= 2 && g_jFinalFOG[id] <= 50)
+    // Determine if we should show Jump/Duck/FOG
+    new bool:validFOG = (g_lastType[id] == 1) ? (g_jFinalFOG[id] <= 50) : (g_dFinalFOG[id] <= 50)
+
+    if (showStats && validFOG) {
+        if (g_lastType[id] == 1 && g_jCount[id] >= 2)
             formatex(szStats, charsmax(szStats), "J: %d [%d]", g_jCount[id], g_jFire[id])
-        else if (g_lastType[id] == 2 && g_dCount[id] >= 2 && g_dFinalFOG[id] <= 50)
+        else if (g_lastType[id] == 2 && g_dCount[id] >= 2)
             formatex(szStats, charsmax(szStats), "D: %d [%d]", g_dCount[id], g_dFire[id])
-    }
-
-    if (!szStats[0]) copy(szStats, charsmax(szStats), " ") 
-
-    if (get_pcvar_num(p_show_fog)) {
-        if (szStats[0] && szStats[0] != ' ' && showStats) {
+            
+        if (szStats[0] && get_pcvar_num(p_show_fog)) {
             new fogVal = (g_lastType[id] == 1) ? g_jFinalFOG[id] : g_dFinalFOG[id]
             formatex(szFog, charsmax(szFog), "^nFOG: %d", fogVal)
-        } else copy(szFog, charsmax(szFog), "^n ") 
+        }
     }
+
+    // Placeholders for stability
+    if (!szStats[0]) copy(szStats, charsmax(szStats), " ") 
+    if (!szFog[0]) copy(szFog, charsmax(szFog), "^n ")
 
     new iMode = get_pcvar_num(p_speed_mode)
     if (iMode == 1) // Live
         formatex(szSpeed, charsmax(szSpeed), "^n%d", calculate_speed(id))
     else if (iMode == 2) // Static
-        formatex(szSpeed, charsmax(szSpeed), "^n%s", (showStats && szStats[0] != ' ') ? fmt("%d", g_staticSpeed[id]) : " ")
+        formatex(szSpeed, charsmax(szSpeed), "^n%s", showStats ? fmt("%d", g_staticSpeed[id]) : " ")
 
     client_print(id, print_center, "%s%s%s%s", szPad, szStats, szFog, szSpeed)
 }

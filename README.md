@@ -6,7 +6,10 @@ Kind of an alternative to kzrush's /showpre, also shows scroll step count.
 
 Download the compiled plugin here [https://github.com/frussif/frupre/blob/main/frupre.amxx](https://github.com/frussif/frupre/raw/refs/heads/main/frupre.amxx).
 
+Use /fru or !fru to configure and save below options:
+
 ## ⚙️ CVARs
+Use /fru or !fru to configure and save below options:
 
 | CVAR | Default | Description |
 | :--- | :--- | :--- |

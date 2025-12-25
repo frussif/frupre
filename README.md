@@ -6,20 +6,22 @@ Kind of an alternative to kzrush's /showpre, also shows scroll step count.
 
 Download the compiled plugin here [https://github.com/frussif/frupre/blob/main/frupre.amxx](https://github.com/frussif/frupre/raw/refs/heads/main/frupre.amxx).
 
-## ⚙️ CVARs
-Use /fru or !fru to configure and save below options (personal saved options have priority over cvars):
+## ⚙️ Configuration
+The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to configure your personal settings. Settings are saved per player in the vault.
 
-| CVAR | Default | Description |
+| Option | Default | Description |
 | :--- | :--- | :--- |
-| `frupre_enable` | `1` | Master toggle for the plugin. |
-| `frupre_jump` | `1` | Toggle display of Jump (+jump) stats. |
-| `frupre_duck` | `1` | Toggle display of Duck (+duck) stats. |
-| `frupre_fog` | `1` | Toggle the FOG (Frames On Ground) display. |
-| `frupre_speed` | `1` | 0 = OFF, 1 = Live (continuous), 2 = Static (shows pre and post speed). |
-| `frupre_speed_type` | `1` | 1 = Horizontal (XY), 2 = True 3D (XYZ). |
-| `frupre_height` | `12` | Change the height at which it's displayed, 12 is around the center. |
-| `frupre_colors` | `1` | Toggle Adaptive colors (only works with hud_type 2). |
-| `frupre_hud_type` | `2` | 1 = Classic CenterPrint (Yellow), 2 = RGB HUD (Multi-color). |
+| **Jump** | `ON` | Toggle display of Jump (+jump) stats. |
+| **Duck** | `ON` | Toggle display of Duck (+duck) stats. |
+| **FOG** | `ON` | Toggle the FOG (Frames On Ground) display. |
+| **Speed** | `Live` | `OFF`, `Live` (continuous), or `Static` (shows pre/post speed). |
+| **Speed Type** | `XY` | `XY` for horizontal speed, `XYZ` for true 3D speed. |
+| **Height** | `12` | Adjust HUD vertical position (0-20 scale). |
+| **Colors** | `ON` | Toggle adaptive colors (Green/Orange/Red) for RGB HUD. |
+| **HUD Type** | `RGB` | `CenterPrint` (Yellow) or `RGB HUD` (Multi-color). |
+
+---
+> **Note:** Always select **"Save Settings"** at the bottom of the menu to ensure your changes persist after you disconnect.
 
 ## 🕹️ HUD Layout
 

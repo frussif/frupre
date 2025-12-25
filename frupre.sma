@@ -2,18 +2,17 @@
 #include <fakemeta>
 #include <nvault>
 
-// Player Settings & Stats
 new g_vault, g_pJump[33], g_pDuck[33], g_pFog[33], g_pSpeed[33], g_pSType[33], g_pHeight[33], g_pColor[33], g_pHud[33]
 new g_jCount[33], g_jFire[33], g_jFinalFOG[33], g_dCount[33], g_dFire[33], g_dFinalFOG[33]
 new g_jFOG[33], g_dFOG[33], bool:g_onGround[33], Float:g_lastScrollTime[33], g_lastType[33]
 new g_preSpeed[33], g_postSpeed[33]
 
 public plugin_init() {
-    register_plugin("Frupre Pro Ultimate", "4.2", "Custom")
+    register_plugin("Frupre Pro Ultimate", "6.9", "Custom")
     register_forward(FM_PlayerPreThink, "fwd_PlayerPreThink")
     
-    register_clcmd("say /fru", "menu_fru")
-    register_clcmd("say !fru", "menu_fru")
+    register_clcmd("say /frupre", "menu_fru")
+    register_clcmd("say !frupre", "menu_fru")
     
     g_vault = nvault_open("frupre_settings")
 }
@@ -21,9 +20,9 @@ public plugin_init() {
 public client_putinserver(id) load_data(id)
 public client_disconnected(id) save_data(id)
 
+// --- Logic ---
 public fwd_PlayerPreThink(id) {
     if (!is_user_alive(id)) return
-    
     static buttons, oldbuttons, flags
     buttons = pev(id, pev_button); oldbuttons = pev(id, pev_oldbuttons); flags = pev(id, pev_flags)
     new Float:fTime = get_gametime()
@@ -40,19 +39,14 @@ public fwd_PlayerPreThink(id) {
         if (fTime - g_lastScrollTime[id] > 0.05) { g_dCount[id] = 0; g_dFire[id] = 0; }
         g_dCount[id]++
         if (g_dCount[id] >= 2) { if (g_lastType[id] == 1) { g_jCount[id] = 0; g_jFire[id] = 0; } g_lastType[id] = 2; }
-        if (!(flags & FL_DUCKING) && g_dFire[id] == 0) { 
-            g_dFire[id] = g_dCount[id]; g_dFinalFOG[id] = g_dFOG[id]; g_postSpeed[id] = calculate_speed(id) 
-        }
+        if (!(flags & FL_DUCKING) && g_dFire[id] == 0) { g_dFire[id] = g_dCount[id]; g_dFinalFOG[id] = g_dFOG[id]; g_postSpeed[id] = calculate_speed(id); }
         g_lastScrollTime[id] = fTime
     }
-
     if ((buttons & IN_JUMP) && !(oldbuttons & IN_JUMP) && g_pJump[id]) {
         if (fTime - g_lastScrollTime[id] > 0.05) { g_jCount[id] = 0; g_jFire[id] = 0; }
         g_jCount[id]++
         if (g_jCount[id] >= 2) { if (g_lastType[id] == 2) { g_dCount[id] = 0; g_dFire[id] = 0; } g_lastType[id] = 1; }
-        if ((flags & FL_ONGROUND) && g_jFire[id] == 0) { 
-            g_jFire[id] = g_jCount[id]; g_jFinalFOG[id] = g_jFOG[id]; g_postSpeed[id] = calculate_speed(id)
-        }
+        if ((flags & FL_ONGROUND) && g_jFire[id] == 0) { g_jFire[id] = g_jCount[id]; g_jFinalFOG[id] = g_jFOG[id]; g_postSpeed[id] = calculate_speed(id); }
         g_lastScrollTime[id] = fTime
     }
     update_display(id, fTime)
@@ -60,96 +54,139 @@ public fwd_PlayerPreThink(id) {
 
 calculate_speed(id) {
     static Float:vel[3]; pev(id, pev_velocity, vel)
-    if (g_pSType[id] == 2) return floatround(floatsqroot(vel[0]*vel[0] + vel[1]*vel[1] + vel[2]*vel[2]))
-    return floatround(floatsqroot(vel[0]*vel[0] + vel[1]*vel[1]))
+    return (g_pSType[id] == 2) ? floatround(floatsqroot(vel[0]*vel[0] + vel[1]*vel[1] + vel[2]*vel[2])) : floatround(floatsqroot(vel[0]*vel[0] + vel[1]*vel[1]))
 }
 
 update_display(id, Float:fTime) {
-    static szMain[192], szStats[64], szFog[32], szSpeed[32], szPad[64]
-    szStats[0]=0; szFog[0]=0; szSpeed[0]=0; szPad[0]=0
-    
     new bool:showStats = (fTime - g_lastScrollTime[id] < 2.0)
+    new bool:colorsOn = (g_pColor[id] == 1), bool:fogOn = (g_pFog[id] == 1)
     new curFog = (g_lastType[id] == 1) ? g_jFinalFOG[id] : g_dFinalFOG[id]
+    new curStep = (g_lastType[id] == 1) ? g_jFire[id] : g_dFire[id]
     
     if (g_pHud[id] == 1) {
+        static szMain[192], szStats[64], szFog[32], szSpeed[32], szPad[64]
+        szStats[0] = 0; szFog[0] = 0; szSpeed[0] = 0; szPad[0] = 0
         for(new i = 0; i < clamp(g_pHeight[id], 0, 20); i++) add(szPad, 63, "^n")
         if (showStats && curFog <= 20) {
-            formatex(szStats, 63, "%s: %d [%d]", (g_lastType[id] == 1) ? "J" : "D", (g_lastType[id] == 1) ? g_jCount[id] : g_dCount[id], (g_lastType[id] == 1) ? g_jFire[id] : g_dFire[id])
-            if (g_pFog[id]) formatex(szFog, 31, "^nFOG: %d", curFog)
+            if (g_lastType[id] == 1 && g_jCount[id] >= 2) formatex(szStats, 63, "J: %d [%d]", g_jCount[id], g_jFire[id])
+            else if (g_lastType[id] == 2 && g_dCount[id] >= 2) formatex(szStats, 63, "D: %d [%d]", g_dCount[id], g_dFire[id])
+            if (szStats[0] && fogOn) formatex(szFog, 31, "^nFOG: %d", curFog)
         }
         if (g_pSpeed[id] == 1) formatex(szSpeed, 31, "^n%d", calculate_speed(id))
-        else if (g_pSpeed[id] == 2 && showStats) formatex(szSpeed, 31, (curFog > 20) ? "^n%d" : "^n%d, %d", g_preSpeed[id], g_postSpeed[id])
+        else if (g_pSpeed[id] == 2 && showStats) {
+            if (curFog <= 20) formatex(szSpeed, 31, "^n%d, %d", g_preSpeed[id], g_postSpeed[id])
+            else formatex(szSpeed, 31, "^n%d", g_postSpeed[id])
+        }
         if (szStats[0] || szSpeed[0]) { formatex(szMain, 191, "%s%s%s%s", szPad, szStats, szFog, szSpeed); client_print(id, print_center, szMain); }
     } else {
-        new Float:sY = 0.35 + (float(g_pHeight[id]) * 0.025), r=255, g=255, b=255
+        new Float:startY = 0.35 + (float(g_pHeight[id]) * 0.025), Float:gap = 0.012
+        static szLine1[64], szLine2[128]; szLine1[0] = 0; szLine2[0] = 0
+
         if (showStats && curFog <= 20) {
-            if (g_pColor[id]) { if (curFog <= 2) { r=0; g=255; b=0; } else if (curFog == 3) { r=255; g=150; b=0; } else { r=255; g=0; b=0; } }
-            formatex(szStats, 63, "%s: %d [%d]", (g_lastType[id] == 1) ? "J" : "D", (g_lastType[id] == 1) ? g_jCount[id] : g_dCount[id], (g_lastType[id] == 1) ? g_jFire[id] : g_dFire[id])
-            set_hudmessage(r, g, b, -1.0, sY, 0, 0.0, 0.1, 0.0, 0.0, 3); show_hudmessage(id, szStats)
-            if (g_pFog[id]) { formatex(szFog, 31, "FOG: %d", curFog); set_hudmessage(r, g, b, -1.0, sY+0.012, 0, 0.0, 0.1, 0.0, 0.0, 4); show_hudmessage(id, szFog); }
+            new r = 255, g = 255, b = 255
+            if (colorsOn) {
+                if (curStep <= 2) { r = 0; g = 255; b = 0; }
+                else if (curStep <= 4) { r = 255; g = 150; b = 0; }
+                else { r = 255; g = 0; b = 0; }
+            }
+            if (g_lastType[id] == 1 && g_jCount[id] >= 2) formatex(szLine1, 63, "J: %d [%d]", g_jCount[id], g_jFire[id])
+            else if (g_lastType[id] == 2 && g_dCount[id] >= 2) formatex(szLine1, 63, "D: %d [%d]", g_dCount[id], g_dFire[id])
+            
+            if (szLine1[0]) {
+                set_hudmessage(r, g, b, -1.0, fogOn ? startY : (startY + gap), 0, 0.0, 0.1, 0.0, 0.0, 3)
+                show_hudmessage(id, szLine1)
+            }
         }
+
+        new rF = 255, gF = 255, bF = 100 
+        if (showStats && curFog <= 20 && fogOn) {
+            if (colorsOn) {
+                if (curFog <= 2) { rF = 0; gF = 255; bF = 0; }
+                else if (curFog == 3) { rF = 255; gF = 150; bF = 0; }
+                else { rF = 255; gF = 0; bF = 0; }
+            }
+            formatex(szLine2, 127, "FOG: %d", curFog)
+        }
+
         if (g_pSpeed[id] > 0) {
-            if (g_pSpeed[id] == 1) formatex(szSpeed, 31, "%d", calculate_speed(id))
-            else if (showStats) formatex(szSpeed, 31, (curFog > 20) ? "%d" : "%d, %d", g_preSpeed[id], g_postSpeed[id])
-            if (szSpeed[0]) { set_hudmessage(255, 255, 100, -1.0, sY+(g_pFog[id]?0.024:0.012), 0, 0.0, 0.1, 0.0, 0.0, -1); show_hudmessage(id, szSpeed); }
+            static szSpeed[64]; szSpeed[0] = 0
+            if (g_pSpeed[id] == 1) formatex(szSpeed, 63, "%d", calculate_speed(id))
+            else if (showStats) {
+                if (curFog <= 20) formatex(szSpeed, 63, "%d, %d", g_preSpeed[id], g_postSpeed[id])
+                else formatex(szSpeed, 63, "%d", g_postSpeed[id])
+            }
+            if (szSpeed[0]) {
+                if (szLine2[0]) add(szLine2, 127, "^n")
+                add(szLine2, 127, szSpeed)
+            }
+        }
+
+        if (szLine2[0]) {
+            set_hudmessage(rF, gF, bF, -1.0, startY + gap, 0, 0.0, 0.1, 0.0, 0.0, 4)
+            show_hudmessage(id, szLine2)
         }
     }
 }
 
+// --- Menu ---
 public menu_fru(id) {
-    new menu = menu_create("\yFrupre Settings \w[Page 1]", "menu_handler")
-    menu_additem(menu, g_pJump[id] ? "Jump Stats: \yON" : "Jump Stats: \rOFF")
-    menu_additem(menu, g_pDuck[id] ? "Duck Stats: \yON" : "Duck Stats: \rOFF")
-    menu_additem(menu, g_pFog[id] ? "FOG Display: \yON" : "FOG Display: \rOFF")
-    new sp[32]; formatex(sp, 31, "Speed Mode: \y%s", (g_pSpeed[id]==0)?"OFF":(g_pSpeed[id]==1?"Live":"Static")); menu_additem(menu, sp)
-    menu_additem(menu, "Height: \yIncrease (+)")
-    menu_additem(menu, "Height: \rDecrease (-)")
-    menu_additem(menu, g_pColor[id] ? "Adaptive Colors: \yON" : "Adaptive Colors: \rOFF")
-    
+    new menu = menu_create("\yFrupre Settings", "menu_handler")
+    menu_additem(menu, g_pJump[id] ? "Jump: \yON" : "Jump: \rOFF")
+    menu_additem(menu, g_pDuck[id] ? "Duck: \yON" : "Duck: \rOFF")
+    menu_additem(menu, g_pFog[id] ? "FOG: \yON" : "FOG: \rOFF")
+    new sp[32]; formatex(sp, 31, "Speed: \y%s", (g_pSpeed[id]==0)?"OFF":(g_pSpeed[id]==1?"Live":"Static")); menu_additem(menu, sp)
+    menu_additem(menu, "Height (+)")
+    menu_additem(menu, "Height (-)")
+    menu_additem(menu, g_pColor[id] ? "Colors: \yON" : "Colors: \rOFF")
     menu_setprop(menu, MPROP_PERPAGE, 0)
-    menu_additem(menu, "\wMore Options...") // Item 7
-    menu_additem(menu, "\gSave Settings")   // Item 8
+    menu_additem(menu, "\wMore Options...")
+    menu_additem(menu, "\gSave Settings")
     menu_display(id, menu)
 }
 
 public menu_handler(id, menu, item) {
     if (item == MENU_EXIT) { menu_destroy(menu); return PLUGIN_HANDLED; }
     switch(item) {
-        case 0: g_pJump[id]=!g_pJump[id]; case 1: g_pDuck[id]=!g_pDuck[id]; case 2: g_pFog[id]=!g_pFog[id]
-        case 3: { g_pSpeed[id]++; if (g_pSpeed[id]>2) g_pSpeed[id]=0; }
-        case 4: { if (g_pHeight[id] > 0) g_pHeight[id]--; } 
-        case 5: { if (g_pHeight[id] < 20) g_pHeight[id]++; }
-        case 6: g_pColor[id]=!g_pColor[id]
+        case 0: g_pJump[id] = !g_pJump[id]
+        case 1: g_pDuck[id] = !g_pDuck[id]
+        case 2: g_pFog[id] = !g_pFog[id]
+        case 3: { g_pSpeed[id]++; if(g_pSpeed[id]>2) g_pSpeed[id]=0; }
+        case 4: { if(g_pHeight[id]>0) g_pHeight[id]--; }
+        case 5: { if(g_pHeight[id]<20) g_pHeight[id]++; }
+        case 6: g_pColor[id] = !g_pColor[id]
         case 7: { menu_more(id); menu_destroy(menu); return PLUGIN_HANDLED; }
-        case 8: { save_data(id); client_print(id, print_chat, "[Frupre] Settings Saved!"); menu_destroy(menu); return PLUGIN_HANDLED; }
+        case 8: { 
+            save_data(id)
+            client_print(id, print_chat, "[Frupre] Settings saved to vault.")
+        }
     }
     menu_fru(id); return PLUGIN_HANDLED
 }
 
 public menu_more(id) {
-    new menu = menu_create("\yFrupre Settings \w[Page 2]", "handler_more")
-    menu_additem(menu, g_pSType[id] == 1 ? "Speed Type: \yXY" : "Speed Type: \yXYZ") // 0
-    menu_additem(menu, g_pHud[id] == 1 ? "HUD Type: \yCenterPrint" : "HUD Type: \yRGB HUD") // 1
-    menu_additem(menu, "Back to Main") // 2
-    
-    // Manual numbering for the save button on slot 9
-    menu_additem(menu, "\gSave Settings", .callback = -1) // This will be index 3 but we'll map it to key 9 visually
-    
-    menu_setprop(menu, MPROP_PERPAGE, 0)
+    new menu = menu_create("\yFrupre Settings \w[P2]", "handler_more")
+    menu_additem(menu, g_pSType[id] == 1 ? "Speed Type: \yXY" : "Speed Type: \yXYZ")
+    menu_additem(menu, g_pHud[id] == 1 ? "HUD Type: \yCenterPrint" : "HUD Type: \yRGB HUD")
+    menu_additem(menu, "Back")
+    menu_additem(menu, "\gSave Settings")
     menu_display(id, menu)
 }
 
 public handler_more(id, menu, item) {
     if (item == MENU_EXIT) { menu_destroy(menu); return PLUGIN_HANDLED; }
     switch(item) {
-        case 0: g_pSType[id]=(g_pSType[id]==1?2:1)
-        case 1: g_pHud[id]=(g_pHud[id]==1?2:1)
+        case 0: g_pSType[id] = (g_pSType[id] == 1 ? 2 : 1)
+        case 1: g_pHud[id] = (g_pHud[id] == 1 ? 2 : 1)
         case 2: { menu_fru(id); menu_destroy(menu); return PLUGIN_HANDLED; }
-        case 3: { save_data(id); client_print(id, print_chat, "[Frupre] Settings Saved!"); menu_destroy(menu); return PLUGIN_HANDLED; }
+        case 3: { 
+            save_data(id)
+            client_print(id, print_chat, "[Frupre] Settings saved to vault.")
+        }
     }
     menu_more(id); return PLUGIN_HANDLED
 }
 
+// --- Persistence ---
 save_data(id) {
     new auth[32], data[128]; get_user_authid(id, auth, 31)
     formatex(data, 127, "%d %d %d %d %d %d %d %d", g_pJump[id], g_pDuck[id], g_pFog[id], g_pSpeed[id], g_pSType[id], g_pHeight[id], g_pColor[id], g_pHud[id])
@@ -163,5 +200,7 @@ load_data(id) {
         parse(data, j, 1, d, 1, f, 1, s, 1, st, 1, h, 2, c, 1, hu, 1)
         g_pJump[id]=str_to_num(j); g_pDuck[id]=str_to_num(d); g_pFog[id]=str_to_num(f); g_pSpeed[id]=str_to_num(s)
         g_pSType[id]=str_to_num(st); g_pHeight[id]=str_to_num(h); g_pColor[id]=str_to_num(c); g_pHud[id]=str_to_num(hu)
-    } else { g_pJump[id]=1; g_pDuck[id]=1; g_pFog[id]=1; g_pSpeed[id]=1; g_pSType[id]=1; g_pHeight[id]=12; g_pColor[id]=1; g_pHud[id]=2; }
+    } else { 
+        g_pJump[id]=1; g_pDuck[id]=1; g_pFog[id]=1; g_pSpeed[id]=1; g_pSType[id]=1; g_pHeight[id]=12; g_pColor[id]=1; g_pHud[id]=2; 
+    }
 }

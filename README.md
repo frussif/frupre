@@ -17,7 +17,7 @@ Download the compiled plugin here [https://github.com/frussif/frupre/blob/main/f
 | `frupre_speed` | `1` | 0 = OFF, 1 = Live (continuous), 2 = Static (shows pre and post speed). |
 | `frupre_speed_type` | `1` | 1 = Horizontal (XY), 2 = True 3D (XYZ). |
 | `frupre_height` | `12` | Change the height at which it's displayed, 12 is around the center. |
-| `frupre_colors` | `1` | Toggle Adaptive colors (Green for 1-2 FOG/Steps, Red for 3+). |
+| `frupre_colors` | `1` | Toggle Adaptive colors (only works with hud_type 2). |
 | `frupre_hud_type` | `2` | 1 = Classic CenterPrint (Yellow), 2 = RGB HUD (Multi-color). |
 
 ## 🕹️ HUD Layout

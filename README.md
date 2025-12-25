@@ -14,7 +14,7 @@ Download the compiled plugin here https://github.com/frussif/frupre/blob/main/fr
 | `frupre_jump` | `1` | Toggle display of Jump (+jump) stats. |
 | `frupre_duck` | `1` | Toggle display of Duck (+duck) stats. |
 | `frupre_fog` | `1` | Toggle the FOG (Frames On Ground) display. |
-| `frupre_speed` | `1` | Toggle the live speed display, option 1 for horizontal speed option 2 for true 3D speed. |
+| `frupre_speed` | `1` | Toggle the live speed display, option 1 for horizontal speed, option 2 for true 3D speed. |
 | `frupre_height` | `10` | Change the height at which it's displayed, 10 is around the center. |
 
 ## 🕹️ HUD Layout

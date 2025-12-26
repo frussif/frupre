@@ -9,16 +9,22 @@ Download the compiled plugin here [https://github.com/frussif/frupre/blob/main/f
 ## ⚙️ Configuration
 The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to configure your personal settings. Settings are saved per player in the vault.
 
+# Frupre Pro Ultimate - Configuration Options
+
 | Option | Default | Description |
 | :--- | :--- | :--- |
-| **Jump** | `ON` | Toggle display of Jump (+jump) stats. |
-| **Duck** | `ON` | Toggle display of Duck (+duck) stats. |
-| **FOG** | `ON` | Toggle the FOG (Frames On Ground) display. |
-| **Speed** | `Live` | `OFF`, `Live` (continuous), or `Static` (shows pre/post speed). |
+| **Plugin** | `On` | Global toggle for the entire plugin. |
+| **Mode** | `Both` | Cycles through `Off`, `Jump`, `Duck`, or `Both` (J+D) detection. |
+| **Scroll Info** | `On` | Toggle the scroll count line (e.g., `J: 12 [2]`). |
+| **FOG** | `On` | Toggle the FOG (Frames On Ground) display. |
+| **Speed** | `Live` | `Off`, `Live` (continuous), or `Static` (shows max speed on landing). |
 | **Speed Type** | `XY` | `XY` for horizontal speed, `XYZ` for true 3D speed. |
 | **Height** | `12` | Adjust HUD vertical position (0-20 scale). |
-| **Colors** | `ON` | Toggle adaptive colors (Green/Orange/Red) for RGB HUD. |
+| **Colors** | `On` | Toggle adaptive colors (Green/Orange/Red) for RGB HUD. |
 | **HUD Type** | `RGB` | `CenterPrint` (Yellow) or `RGB HUD` (Multi-color). |
+
+---
+**Note:** Use the `Save` option at the bottom of the menu to persist your changes across sessions.
 
 ---
 > **Note:** Always select **"Save Settings"** at the bottom of the menu to ensure your changes persist after you disconnect.

@@ -26,12 +26,9 @@ The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to conf
 ---
 **Note:** Use the `Save` option at the bottom of the menu to persist your changes across sessions.
 
----
-> **Note:** Always select **"Save Settings"** at the bottom of the menu to ensure your changes persist after you disconnect.
-
 ## 🕹️ HUD Layout
 
 ```text
 J: 15 [1]     <- Scroll step count [Step that triggered +jump/+duck]
 FOG: 2        <- Frames on ground
-250           <- Live speed
+250           <- Live speed/Max speed (depends on option)

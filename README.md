@@ -7,7 +7,7 @@ Kind of an alternative to kzrush's /showpre, also shows scroll step count.
 Download the compiled plugin here [https://github.com/frussif/frupre/blob/main/frupre.amxx](https://github.com/frussif/frupre/raw/refs/heads/main/frupre.amxx).
 
 ## ⚙️ Configuration
-The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to configure your personal settings. Settings are saved per player in the vault.
+The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to configure your personal settings. Settings are saved in your cstrike folder under "frupre_save".
 
 # Frupre Pro Ultimate - Configuration Options
 

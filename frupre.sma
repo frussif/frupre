@@ -145,25 +145,81 @@ public handler_more(id, menu, item) {
 }
 
 public save_data(id) {
-	new szFile[128], szData[256], szName[32]
-	format(szFile, 127, "frupre_save.txt") // Direct path for legacy
+	new szFile[128], szName[32], szAuth[32]
+	format(szFile, 127, "frupre_save.txt")
 	get_user_name(id, szName, 31)
-	formatex(szData, 255, "^"%s^" %d %d %d %d %d %d %d %d %d", szName, g_pMode[id], g_pFog[id], g_pSpeed[id], g_pSType[id], g_pHeight[id], g_pColor[id], g_pHud[id], g_pEnabled[id], g_pScrollInfo[id])
-	write_file(szFile, szData, 0) 
+	get_user_authid(id, szAuth, 31)
+
+	// Delete old file to rewrite clean vertical list
+	if (file_exists(szFile)) delete_file(szFile)
+
+	write_file(szFile, "// Frupre Pro Ultimate - User Configuration")
+	write_file(szFile, "// ----------------------------------------")
+	
+	new szLine[128]
+	formatex(szLine, 127, "User: %s", szName); write_file(szFile, szLine)
+	formatex(szLine, 127, "ID: %s", szAuth); write_file(szFile, szLine)
+	write_file(szFile, "") // Blank line for readability
+
+	write_file(szFile, "// 0=Off, 1=Jump, 2=Duck, 3=Both")
+	formatex(szLine, 127, "Mode %d", g_pMode[id]); write_file(szFile, szLine)
+
+	write_file(szFile, "// 0=Off, 1=On")
+	formatex(szLine, 127, "Fog %d", g_pFog[id]); write_file(szFile, szLine)
+
+	write_file(szFile, "// 0=Off, 1=Live, 2=Static")
+	formatex(szLine, 127, "Speed %d", g_pSpeed[id]); write_file(szFile, szLine)
+
+	write_file(szFile, "// 1=XY, 2=XYZ")
+	formatex(szLine, 127, "SType %d", g_pSType[id]); write_file(szFile, szLine)
+
+	write_file(szFile, "// 0 to 20 (Higher = Higher on screen)")
+	formatex(szLine, 127, "Height %d", g_pHeight[id]); write_file(szFile, szLine)
+
+	write_file(szFile, "// 0=Off, 1=On")
+	formatex(szLine, 127, "Color %d", g_pColor[id]); write_file(szFile, szLine)
+
+	write_file(szFile, "// 1=Center, 2=RGB HUD")
+	formatex(szLine, 127, "Hud %d", g_pHud[id]); write_file(szFile, szLine)
+
+	write_file(szFile, "// 0=Disabled, 1=Enabled")
+	formatex(szLine, 127, "Plugin %d", g_pEnabled[id]); write_file(szFile, szLine)
+
+	write_file(szFile, "// 0=Off, 1=On")
+	formatex(szLine, 127, "ScrollInfo %d", g_pScrollInfo[id]); write_file(szFile, szLine)
 }
 
 public load_data(id) {
-	new szFile[128], szData[256], iLen, szName[32], szSavedName[32]
+	new szFile[128], szData[256], szTag[32], szVal[32], szSavedAuth[32], szCurrentAuth[32]
 	format(szFile, 127, "frupre_save.txt")
-	get_user_name(id, szName, 31)
-	if (file_exists(szFile)) {
-		read_file(szFile, 0, szData, 255, iLen)
-		new m[4], f[4], s[4], st[4], h[4], c[4], hu[4], e[4], si[4]
-		parse(szData, szSavedName, 31, m, 3, f, 3, s, 3, st, 3, h, 3, c, 3, hu, 3, e, 3, si, 3)
-		if (equal(szName, szSavedName)) {
-			g_pMode[id]=str_to_num(m); g_pFog[id]=str_to_num(f); g_pSpeed[id]=str_to_num(s)
-			g_pSType[id]=str_to_num(st); g_pHeight[id]=str_to_num(h); g_pColor[id]=str_to_num(c); 
-			g_pHud[id]=str_to_num(hu); g_pEnabled[id]=str_to_num(e); g_pScrollInfo[id]=str_to_num(si)
+	get_user_authid(id, szCurrentAuth, 31)
+
+	if (!file_exists(szFile)) return
+
+	new iFile = fopen(szFile, "rt")
+	if (iFile) {
+		while (!feof(iFile)) {
+			fgets(iFile, szData, 255)
+			trim(szData)
+			if (!szData[0] || szData[0] == '/') continue
+
+			parse(szData, szTag, 31, szVal, 31)
+
+			if (equal(szTag, "ID")) copy(szSavedAuth, 31, szVal)
+			
+			// Only load if the ID in the file matches you
+			if (equal(szCurrentAuth, szSavedAuth) || equal(szSavedAuth, "STEAM_ID_LAN")) {
+				if (equal(szTag, "Mode")) g_pMode[id] = str_to_num(szVal)
+				else if (equal(szTag, "Fog")) g_pFog[id] = str_to_num(szVal)
+				else if (equal(szTag, "Speed")) g_pSpeed[id] = str_to_num(szVal)
+				else if (equal(szTag, "SType")) g_pSType[id] = str_to_num(szVal)
+				else if (equal(szTag, "Height")) g_pHeight[id] = str_to_num(szVal)
+				else if (equal(szTag, "Color")) g_pColor[id] = str_to_num(szVal)
+				else if (equal(szTag, "Hud")) g_pHud[id] = str_to_num(szVal)
+				else if (equal(szTag, "Plugin")) g_pEnabled[id] = str_to_num(szVal)
+				else if (equal(szTag, "ScrollInfo")) g_pScrollInfo[id] = str_to_num(szVal)
+			}
 		}
+		fclose(iFile)
 	}
 }

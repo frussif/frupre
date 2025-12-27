@@ -145,52 +145,47 @@ public handler_more(id, menu, item) {
 }
 
 public save_data(id) {
-	new szFile[128], szName[32], szAuth[32]
+	new szFile[128], szName[32], szAuth[32], szLine[128]
 	format(szFile, 127, "frupre_save.txt")
 	get_user_name(id, szName, 31)
 	get_user_authid(id, szAuth, 31)
 
-	// Delete old file to rewrite clean vertical list
 	if (file_exists(szFile)) delete_file(szFile)
 
-	write_file(szFile, "// Frupre Pro Ultimate - User Configuration")
-	write_file(szFile, "// ----------------------------------------")
+	write_file(szFile, "// Frupre Pro Ultimate Configuration")
+	formatex(szLine, 127, "ID ^"%s^"", szAuth); write_file(szFile, szLine)
+	formatex(szLine, 127, "Name ^"%s^"", szName); write_file(szFile, szLine)
 	
-	new szLine[128]
-	formatex(szLine, 127, "User: %s", szName); write_file(szFile, szLine)
-	formatex(szLine, 127, "ID: %s", szAuth); write_file(szFile, szLine)
-	write_file(szFile, "") // Blank line for readability
-
 	write_file(szFile, "// 0=Off, 1=Jump, 2=Duck, 3=Both")
 	formatex(szLine, 127, "Mode %d", g_pMode[id]); write_file(szFile, szLine)
-
+	
 	write_file(szFile, "// 0=Off, 1=On")
 	formatex(szLine, 127, "Fog %d", g_pFog[id]); write_file(szFile, szLine)
-
+	
 	write_file(szFile, "// 0=Off, 1=Live, 2=Static")
 	formatex(szLine, 127, "Speed %d", g_pSpeed[id]); write_file(szFile, szLine)
-
+	
 	write_file(szFile, "// 1=XY, 2=XYZ")
 	formatex(szLine, 127, "SType %d", g_pSType[id]); write_file(szFile, szLine)
-
-	write_file(szFile, "// 0 to 20 (Higher = Higher on screen)")
+	
+	write_file(szFile, "// 0-20 Height")
 	formatex(szLine, 127, "Height %d", g_pHeight[id]); write_file(szFile, szLine)
-
+	
 	write_file(szFile, "// 0=Off, 1=On")
 	formatex(szLine, 127, "Color %d", g_pColor[id]); write_file(szFile, szLine)
-
-	write_file(szFile, "// 1=Center, 2=RGB HUD")
+	
+	write_file(szFile, "// 1=Center, 2=RGB")
 	formatex(szLine, 127, "Hud %d", g_pHud[id]); write_file(szFile, szLine)
-
-	write_file(szFile, "// 0=Disabled, 1=Enabled")
+	
+	write_file(szFile, "// 0=Off, 1=On")
 	formatex(szLine, 127, "Plugin %d", g_pEnabled[id]); write_file(szFile, szLine)
-
+	
 	write_file(szFile, "// 0=Off, 1=On")
 	formatex(szLine, 127, "ScrollInfo %d", g_pScrollInfo[id]); write_file(szFile, szLine)
 }
 
 public load_data(id) {
-	new szFile[128], szData[256], szTag[32], szVal[32], szSavedAuth[32], szCurrentAuth[32]
+	new szFile[128], szData[256], szTag[32], szVal[64], szCurrentAuth[32], bool:bIsMe = false
 	format(szFile, 127, "frupre_save.txt")
 	get_user_authid(id, szCurrentAuth, 31)
 
@@ -199,16 +194,16 @@ public load_data(id) {
 	new iFile = fopen(szFile, "rt")
 	if (iFile) {
 		while (!feof(iFile)) {
-			fgets(iFile, szData, 255)
-			trim(szData)
+			fgets(iFile, szData, 255); trim(szData)
 			if (!szData[0] || szData[0] == '/') continue
 
-			parse(szData, szTag, 31, szVal, 31)
+			parse(szData, szTag, 31, szVal, 63)
 
-			if (equal(szTag, "ID")) copy(szSavedAuth, 31, szVal)
-			
-			// Only load if the ID in the file matches you
-			if (equal(szCurrentAuth, szSavedAuth) || equal(szSavedAuth, "STEAM_ID_LAN")) {
+			if (equal(szTag, "ID")) {
+				if (equal(szVal, szCurrentAuth) || equal(szVal, "STEAM_ID_LAN") || equal(szVal, "VALVE_ID_LAN")) bIsMe = true
+			}
+
+			if (bIsMe) {
 				if (equal(szTag, "Mode")) g_pMode[id] = str_to_num(szVal)
 				else if (equal(szTag, "Fog")) g_pFog[id] = str_to_num(szVal)
 				else if (equal(szTag, "Speed")) g_pSpeed[id] = str_to_num(szVal)
@@ -221,5 +216,6 @@ public load_data(id) {
 			}
 		}
 		fclose(iFile)
+		if (bIsMe) client_print(id, print_chat, "[Frupre] Configuration loaded for your ID.")
 	}
 }

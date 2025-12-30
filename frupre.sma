@@ -18,7 +18,7 @@ public plugin_init() {
 public client_putinserver(id) {
     g_pEnabled[id]=1; g_pMode[id]=3; g_pFog[id]=1; g_pSpeed[id]=1; 
     g_pSType[id]=1; g_pHeight[id]=12; g_pColor[id]=1; g_pHud[id]=2; g_pScrollInfo[id]=1; g_pShowStats[id]=1;
-    set_task(2.0, "load_data", id)
+    set_task(0.1, "load_data", id)
 }
 
 public fwd_PlayerPreThink(id) {

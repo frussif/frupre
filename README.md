@@ -4,7 +4,7 @@ A precise movement utility for Counter-Strike 1.6 that tracks scroll input timin
 
 Kind of an alternative to kzrush's /showpre, also shows scroll step count.
 
-Download the compiled plugin here [https://github.com/frussif/frupre/blob/main/frupre.amxx](https://github.com/frussif/frupre/raw/refs/heads/main/frupre.amxx).
+Download the compiled plugin here https://github.com/frussif/frupre/raw/refs/heads/plusstats/frupre.amxx.
 
 ## ⚙️ Configuration
 The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to configure your personal settings. Settings are saved in your cstrike folder under "frupre_save".

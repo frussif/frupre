@@ -29,6 +29,7 @@ The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to conf
 ## 🕹️ HUD Layout
 
 ```text
-J: 15 [1]     <- Scroll step count [Step that triggered +jump/+duck]
-FOG: 2        <- Frames on ground
-250           <- Live speed/Max speed (depends on option)
+     15 [1]        <- Scroll step count [Step that triggered +jump/+duck]
+     FOG: 2        <- Frames on ground
+    250 (30)       <- Live speed or max speed and gain in brackets (depends on option)
+75% | 3/5 | 250.1  <- Sync %, overlaps/dead air & distance

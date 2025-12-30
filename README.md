@@ -22,6 +22,7 @@ The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to conf
 | **Height** | `12` | Adjust HUD vertical position (0-20 scale). |
 | **Colors** | `On` | Toggle adaptive colors (Green/Orange/Red) for RGB HUD. |
 | **HUD Type** | `RGB` | `CenterPrint` (Yellow) or `RGB HUD` (Multi-color). |
+| **Stats** | `On` | Shows sync %, overlaps/dead air & distance. |
 
 ---
 **Note:** Use the `Save` option at the bottom of the menu to persist your changes across sessions.

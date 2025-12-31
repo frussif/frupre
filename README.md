@@ -25,10 +25,19 @@ The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to conf
 | **HUD Type** | `RGB` | `CenterPrint` (White) or `RGB HUD` (Multi-color). |
 | **Colors** | `On` | Toggle adaptive colors (Green/Orange/Red) based on FOG/Steps. |
 
+FOG/Speed/Stats are in the same channel, so they'll show the same colour based on the FOG.
+
+For FOG 1-2 the colour is green, for 3 it's yellow, 4 and up red.
+The FOG display can be turned off, the colours will still represent the FOG.
+
+For the scroll info: Steps 1-2 are green, 3-4 yellow, 5 and up red.
+
 ---
 Settings are automatically saved whenever an option is changed.
 
 ## 🕹️ HUD Layout
+FOG 1-2 for the FOG/Speed/Stats are green, 3 is yellow, 4 and up red.
+For the scrollinfo: Steps 1-2 are green, 3-4 yellow, 5 and up red.
 
 ```text
       12 [3]        <- Total scrolls [The specific scroll that triggered jump/duck]

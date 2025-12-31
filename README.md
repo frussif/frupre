@@ -11,6 +11,8 @@ The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to conf
 
 # Frupre Pro Ultimate - Configuration Options
 
+Settings are automatically saved whenever an option is changed.
+
 | Option | Default | Description |
 | :--- | :--- | :--- |
 | **Plugin** | `On` | Global toggle for the entire plugin. |
@@ -31,9 +33,6 @@ For FOG 1-2 the colour is green, for 3 it's yellow, 4 and up red.
 The FOG display can be turned off, the colours will still represent the FOG.
 
 For the scroll info: Steps 1-2 are green, 3-4 yellow, 5 and up red.
-
----
-Settings are automatically saved whenever an option is changed.
 
 ## 🕹️ HUD Layout
 FOG 1-2 for the FOG/Speed/Stats are green, 3 is yellow, 4 and up red.

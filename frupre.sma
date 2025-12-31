@@ -112,7 +112,7 @@ update_display(id, Float:fTime) {
             if (isJumpRelevant && g_finalGain[id] > 0) formatex(szSp, 63, "%d (%d)^n", g_staticSpeed[id], g_finalGain[id])
             else formatex(szSp, 63, "%d^n", g_staticSpeed[id])
             add(szMain, 255, szSp)
-        }
+        }1
 
         if (isJumpRelevant && g_pShowStats[id] && g_finalDist[id] > 0.0) {
             static szSt[64]; formatex(szSt, 63, "%d%%%% | %d/%d | %.1f", g_finalSync[id], g_finalOverlap[id], g_finalDead[id], g_finalDist[id])
@@ -163,71 +163,77 @@ update_display(id, Float:fTime) {
     }
 }
 
-public menu_fru(id) {
-    new menu = menu_create("\yFrupre Settings [1/2]", "menu_handler"), tmp[64]
+public menu_fru(id) { 
+    new menu = menu_create("\yFrupre Settings [1/2]", "menu_handler"), tmp[64] 
     
-    formatex(tmp, 63, "Plugin: %s", g_pEnabled[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp)
-    static const modeNames[][] = { "Off", "Jump", "Duck", "Both" }
-    formatex(tmp, 63, "Mode: \y%s", modeNames[g_pMode[id]]); menu_additem(menu, tmp)
-    formatex(tmp, 63, "Scroll Info: %s", g_pScrollInfo[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp)
-    formatex(tmp, 63, "FOG: %s", g_pFog[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp)
-    formatex(tmp, 63, "Speed: \y%s", (g_pSpeed[id]==0)?"Off":(g_pSpeed[id]==1?"Live":"Static")); menu_additem(menu, tmp)
-    formatex(tmp, 63, "Stats: %s", g_pShowStats[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp)
-    menu_additem(menu, "\wNext Page")
+    // Disable auto-pagination to prevent greyed out 8/9
+    menu_setprop(menu, MPROP_PERPAGE, 0)
+     
+    formatex(tmp, 63, "Plugin: %s", g_pEnabled[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp) 
+    static const modeNames[][] = { "Off", "Jump", "Duck", "Both" } 
+    formatex(tmp, 63, "Mode: \y%s", modeNames[g_pMode[id]]); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "Scroll Info: %s", g_pScrollInfo[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "FOG: %s", g_pFog[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "Speed: \y%s", (g_pSpeed[id]==0)?"Off":(g_pSpeed[id]==1?"Live":"Static")); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "Stats: %s", g_pShowStats[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp) 
+    menu_additem(menu, "\wNext Page") 
+
+    menu_setprop(menu, MPROP_EXIT, MEXIT_ALL)  
+    menu_setprop(menu, MPROP_EXITNAME, "Close")  
+     
+    menu_display(id, menu) 
+} 
+
+public menu_handler(id, menu, item) { 
+    if (item == MENU_EXIT) { menu_destroy(menu); return PLUGIN_HANDLED; } 
+     
+    switch(item) { 
+        case 0: g_pEnabled[id] = !g_pEnabled[id] 
+        case 1: { g_pMode[id]++; if(g_pMode[id]>3) g_pMode[id]=0; } 
+        case 2: g_pScrollInfo[id] = !g_pScrollInfo[id] 
+        case 3: g_pFog[id] = !g_pFog[id] 
+        case 4: { g_pSpeed[id]++; if(g_pSpeed[id]>2) g_pSpeed[id]=0; } 
+        case 5: g_pShowStats[id] = !g_pShowStats[id] 
+        case 6: { menu_more(id); menu_destroy(menu); return PLUGIN_HANDLED; } 
+    } 
+    save_data(id); menu_destroy(menu); menu_fru(id); return PLUGIN_HANDLED 
+} 
+
+public menu_more(id) { 
+    new menu = menu_create("\yFrupre Settings [2/2]", "handler_more"), tmp[64] 
+    
+    // Disable auto-pagination to prevent greyed out 8/9
+    menu_setprop(menu, MPROP_PERPAGE, 0)
+     
+    menu_additem(menu, "HUD Height (+)") 
+    menu_additem(menu, "HUD Height (-)") 
+    formatex(tmp, 63, "Scrollinfo Gap: \y%.3f (+)", float(g_pGap[id]) / 1000.0); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "Scrollinfo Gap: \y%.3f (-)", float(g_pGap[id]) / 1000.0); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "Speed Type: \y%s", g_pSType[id] == 1 ? "XY, Horizontal" : "XYZ"); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "HUD: \y%s", g_pHud[id] == 1 ? "Center" : "RGB"); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "Colors: %s", g_pColor[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp) 
+    menu_additem(menu, "\wBack to Page 1") 
 
     menu_setprop(menu, MPROP_EXIT, MEXIT_ALL) 
     menu_setprop(menu, MPROP_EXITNAME, "Close") 
-    
-    menu_display(id, menu)
-}
+     
+    menu_display(id, menu) 
+} 
 
-public menu_handler(id, menu, item) {
-    if (item == MENU_EXIT) { menu_destroy(menu); return PLUGIN_HANDLED; }
-    
-    switch(item) {
-        case 0: g_pEnabled[id] = !g_pEnabled[id]
-        case 1: { g_pMode[id]++; if(g_pMode[id]>3) g_pMode[id]=0; }
-        case 2: g_pScrollInfo[id] = !g_pScrollInfo[id]
-        case 3: g_pFog[id] = !g_pFog[id]
-        case 4: { g_pSpeed[id]++; if(g_pSpeed[id]>2) g_pSpeed[id]=0; }
-        case 5: g_pShowStats[id] = !g_pShowStats[id]
-        case 6: { menu_more(id); menu_destroy(menu); return PLUGIN_HANDLED; }
-    }
-    save_data(id); menu_destroy(menu); menu_fru(id); return PLUGIN_HANDLED
-}
+public handler_more(id, menu, item) { 
+    if (item == MENU_EXIT) { menu_destroy(menu); return PLUGIN_HANDLED; } 
 
-public menu_more(id) {
-    new menu = menu_create("\yFrupre Settings [2/2]", "handler_more"), tmp[64]
-    
-    menu_additem(menu, "HUD Height (+)")
-    menu_additem(menu, "HUD Height (-)")
-    formatex(tmp, 63, "Scrollinfo Gap: \y%.3f (+)", float(g_pGap[id]) / 1000.0); menu_additem(menu, tmp)
-    formatex(tmp, 63, "Scrollinfo Gap: \y%.3f (-)", float(g_pGap[id]) / 1000.0); menu_additem(menu, tmp)
-    formatex(tmp, 63, "Speed Type: \y%s", g_pSType[id] == 1 ? "XY, Horizontal" : "XYZ"); menu_additem(menu, tmp)
-    formatex(tmp, 63, "HUD: \y%s", g_pHud[id] == 1 ? "Center" : "RGB"); menu_additem(menu, tmp)
-    formatex(tmp, 63, "Colors: %s", g_pColor[id] ? "\yOn" : "\rOff"); menu_additem(menu, tmp)
-    menu_additem(menu, "\wBack to Page 1")
-
-    menu_setprop(menu, MPROP_EXIT, MEXIT_ALL)
-    menu_setprop(menu, MPROP_EXITNAME, "Close")
-    
-    menu_display(id, menu)
-}
-
-public handler_more(id, menu, item) {
-    if (item == MENU_EXIT) { menu_destroy(menu); return PLUGIN_HANDLED; }
-
-    switch(item) {
-        case 0: { if(g_pHeight[id]<20) g_pHeight[id]++; }
-        case 1: { if(g_pHeight[id]>0) g_pHeight[id]--; }
-        case 2: { g_pGap[id]++; }
-        case 3: { if(g_pGap[id]>0) g_pGap[id]--; }
-        case 4: g_pSType[id] = (g_pSType[id] == 1 ? 2 : 1)
-        case 5: g_pHud[id] = (g_pHud[id] == 1 ? 2 : 1)
-        case 6: g_pColor[id] = !g_pColor[id]
-        case 7: { menu_fru(id); menu_destroy(menu); return PLUGIN_HANDLED; }
-    }
-    save_data(id); menu_destroy(menu); menu_more(id); return PLUGIN_HANDLED
+    switch(item) { 
+        case 0: { if(g_pHeight[id]<20) g_pHeight[id]++; } 
+        case 1: { if(g_pHeight[id]>0) g_pHeight[id]--; } 
+        case 2: { g_pGap[id]++; } 
+        case 3: { if(g_pGap[id]>0) g_pGap[id]--; } 
+        case 4: g_pSType[id] = (g_pSType[id] == 1 ? 2 : 1) 
+        case 5: g_pHud[id] = (g_pHud[id] == 1 ? 2 : 1) 
+        case 6: g_pColor[id] = !g_pColor[id] 
+        case 7: { menu_destroy(menu); menu_fru(id); return PLUGIN_HANDLED; } 
+    } 
+    save_data(id); menu_destroy(menu); menu_more(id); return PLUGIN_HANDLED 
 }
 
 public save_data(id) {

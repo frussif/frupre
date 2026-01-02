@@ -5,7 +5,7 @@ A professional-grade movement utility for Counter-Strike 1.6. Frupre offers a fu
 It serves as a powerful, modern alternative to `showpre`, featuring unique **Smart Hiding** logic to keep your screen clean during normal gameplay.
 
 ## 🚀 Installation
-1. Download `[frupre.amxx](https://github.com/frussif/frupre/raw/refs/heads/modularstats/frupre.amxx)`.
+1. Download [frupre.amxx](https://github.com/frussif/frupre/raw/refs/heads/modularstats/frupre.amxx)
 2. Place it in `cstrike/addons/amxmodx/plugins/`.
 3. Add `frupre.amxx` to a new line in `cstrike/addons/amxmodx/configs/plugins.ini`.
 

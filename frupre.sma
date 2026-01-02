@@ -31,7 +31,7 @@ public cmd_layout(id) {
     new arg[128]; read_args(arg, 127); remove_quotes(arg)
     if(!arg[0]) {
         console_print(id, "^n[Frupre] Current Layout: %s", g_pLayout[id])
-        console_print(id, "[Frupre] Tags: %%fog, %%speed, %%speedstatic, %%gain, %%sync, %%dist, %%overlap, %%dead, %%n^n")
+        console_print(id, "[Frupre] Tags: %%fog, %%speed, %%speedstatic, %%gain, %%sync, %%dist, %%overlap, %%deadair, %%n^n")
         return PLUGIN_HANDLED
     }
     copy(g_pLayout[id], 127, arg); console_print(id, "[Frupre] Layout updated."); save_data(id)

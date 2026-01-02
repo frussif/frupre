@@ -36,7 +36,7 @@ Use the console command `frupre_layout` to design your own HUD.
 * `%speedstatic`: Velocity at the moment of the jump/duck.
 * `%sync`: Strafe synchronization percentage.
 * `%overlap`: Frames where both A+D were held.
-* `%dead`: Frames where no strafe keys were held.
+* `%deadair`: Frames where no strafe keys were held.
 * `%dist`: Jump distance.
 * `%n`: New line.
 

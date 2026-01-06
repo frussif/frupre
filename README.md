@@ -34,6 +34,8 @@ Use the console command `frupre_layout` to design your own HUD.
 * `%gain`: Speed gained during the jump.
 * `%speed`: Live real-time velocity.
 * `%speedstatic`: Velocity at the moment of the jump/duck.
+* `%premsg`: Speed quality text (e.g., "Perfect", "Good", "Bad").
+* `%strafes`: Number of strafes performed in the jump.
 * `%sync`: Strafe synchronization percentage.
 * `%overlap`: Frames where both A+D were held.
 * `%deadair`: Frames where no strafe keys were held.
@@ -41,6 +43,22 @@ Use the console command `frupre_layout` to design your own HUD.
 * `%n`: New line.
 
 ---
+### 🎨 Adaptive Colors
+The HUD dynamically changes color based on your performance:
 
-* **Adaptive Colors:** * **FOG:** 1-2 (Green), 3 (Orange), 4+ (Red).
-    * **Scroll Steps:** 1-2 (Green), 3-4 (Orange), 5+ (Red).
+* **Scroll Steps (Timing):**
+  * **1-2:** Green (Perfect)
+  * **3-4:** Orange (Decent)
+  * **5+:** Red (Slow)
+
+* **Frames on Ground (FOG):**
+  * **1-2:** Green (Perfect)
+  * **3:** Orange (Decent)
+  * **4+:** Red (Slow)
+
+* **Speed (Pre-Speed):**
+  * **300+:** Blue (Speed too high)
+  * **280+:** Green (Perfect)
+  * **240+:** Cyan (Good)
+  * **220+:** Yellow (Bad)
+  * **Below 220:** Red (Terrible)

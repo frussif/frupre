@@ -24,7 +24,7 @@ public plugin_init() {
     register_concmd("frupre", "cmd_toggle", ADMIN_USER, "<0/1>")
     register_concmd("frupre_layout", "cmd_layout", ADMIN_USER, "<string>")
 
-    // Hot-Plug: Initialize for players already connected (Fixes "Not working after reload")
+    // Hot-Plug: Initialize for players already connected
     new players[32], num, id;
     get_players(players, num)
     for(new i = 0; i < num; i++) {
@@ -116,17 +116,16 @@ public fwd_PlayerPreThink(id) {
         g_dCount[id]++; if (g_dCount[id] >= 2) { if (g_lastType[id] == 1) { g_jCount[id] = 0; g_jFire[id] = 0; } g_lastType[id] = 2; }
         if (!(flags & FL_DUCKING) && g_dFire[id] == 0 && (flags & FL_ONGROUND)) { g_dFire[id] = g_dCount[id]; g_dFinalFOG[id] = g_dFOG[id]; g_staticSpeed[id] = curSpeed; }
         g_lastScrollTime[id] = fTime
-        update_display(id, fTime) // Update instantly on input
+        update_display(id, fTime)
     }
     if ((buttons & IN_JUMP) && !(oldbuttons & IN_JUMP) && (g_pMode[id] & 1)) {
         if (fTime - g_lastScrollTime[id] > 0.05) { g_jCount[id] = 0; g_jFire[id] = 0; }
         g_jCount[id]++; if (g_jCount[id] >= 2) { if (g_lastType[id] == 2) { g_dCount[id] = 0; g_dFire[id] = 0; } g_lastType[id] = 1; }
         if ((flags & FL_ONGROUND) && g_jFire[id] == 0) { g_jFire[id] = g_jCount[id]; g_jFinalFOG[id] = g_jFOG[id]; g_staticSpeed[id] = curSpeed; }
         g_lastScrollTime[id] = fTime
-        update_display(id, fTime) // Update instantly on input
+        update_display(id, fTime)
     }
     
-    // THROTTLE: Only update passive HUD every 0.1s to prevent lag
     if (fTime - g_lastHudUpdate[id] >= 0.1) {
         update_display(id, fTime)
         g_lastHudUpdate[id] = fTime
@@ -136,8 +135,12 @@ public fwd_PlayerPreThink(id) {
 public update_display(id, Float:fTime) {
     if (fTime - g_lastScrollTime[id] > 2.0) return
 
-    static szBuffer[192], szVal[32]
     new curFog = (g_lastType[id] == 1) ? g_jFinalFOG[id] : g_dFinalFOG[id]
+    
+    // Smart Hiding: Only show HUD if FOG is under 20 (active bhop/duck session)
+    if (curFog >= 20) return
+
+    static szBuffer[192], szVal[32]
     new curStep = (g_lastType[id] == 1) ? g_jFire[id] : g_dFire[id]
     new curCount = (g_lastType[id] == 1) ? g_jCount[id] : g_dCount[id]
     
@@ -157,7 +160,7 @@ public update_display(id, Float:fTime) {
 
     new Float:startY = 0.35 + (float(g_pHeight[id]-10) * 0.025)
     
-    if (g_pScrollInfo[id] && curCount >= 2 && curFog < 20) {
+    if (g_pScrollInfo[id] && curCount >= 2) {
         new r = 255, g = 255, b = 255
         if (g_pColor[id] > 0) {
             if (curStep <= 2) { r = 0; g = 255; b = 0; }
@@ -171,7 +174,6 @@ public update_display(id, Float:fTime) {
     copy(szBuffer, 191, g_pLayout[id])
     replace_all(szBuffer, 191, "%n", "^n")
     
-    // Manual Contain check without <string> include dependency if possible, but replace_all handles it gracefully usually
     if (containi(szBuffer, "%premsg") != -1) {
         if (g_staticSpeed[id] >= 300) copy(szVal, 31, "Speed over 300")
         else if (g_staticSpeed[id] >= 280) copy(szVal, 31, "Perfect Speed")

@@ -28,7 +28,7 @@ Type **/frupre** or **!frupre** in chat to open the settings menu.
 
 ### Modular HUD Layout
 Use the console command `frupre_layout` to design your own HUD.
-**Example:** `frupre_layout "FOG: %fog %n %speedstatic (%gain) %n %sync%% | %dist"`
+**Default:** `frupre_layout "%speedstatic (%gain) [%fog]%n%strafesx %sync%% [%overlap/%deadair]%n%dist"`
 
 **Available Tags:**
 * `%fog`: Frames on Ground.

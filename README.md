@@ -22,7 +22,7 @@ Type **/frupre** or **!frupre** in chat to open the settings menu.
 | **Scroll Info** | Toggle the scroll count line (e.g., `12 [3]`). |
 | **HUD Height** | Vertical position adjustment (0-20 scale). |
 | **Scrollinfo Gap** | Fine-tune spacing between Scroll Info and Layout lines. |
-| **Colors** | Toggle colour performance indicators, see [below](https://github.com/frussif/frupre/tree/main?tab=readme-ov-file#-adaptive-colors). |
+| **Colors** | Toggle colour performance indicators, see [Adaptive Colors](#adaptive-colors). |
 | **Speed Type** | Toggle between `XY` (Horizontal) or `XYZ` (3D) velocity. |
 | **HUD Type** | Toggle between HUD and DHUD, DHUD offers (much) bigger and clearer text. |
 

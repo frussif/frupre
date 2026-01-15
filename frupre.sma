@@ -39,7 +39,7 @@ public client_putinserver(id) {
 public init_player(id) {
     g_pEnabled[id]=1; g_pMode[id]=3; g_pSType[id]=1; g_pHeight[id]=12; 
     g_pColor[id]=1; g_pScrollInfo[id]=1; g_pGap[id]=13; g_pHudType[id]=0;
-    copy(g_pLayout[id], 127, "FOG: %fog %n %premsg %n %speedstatic (%gain)")
+    copy(g_pLayout[id], 127, "%speedstatic (%gain) [%fog]%n%strafesx %sync%% [%overlap/%deadair]%n%dist")
     set_task(0.5, "load_data", id)
 }
 

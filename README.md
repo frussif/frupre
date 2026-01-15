@@ -22,7 +22,7 @@ Type **/frupre** or **!frupre** in chat to open the settings menu.
 | **Scroll Info** | Toggle the scroll count line (e.g., `12 [3]`). |
 | **HUD Height** | Vertical position adjustment (0-20 scale). |
 | **Scrollinfo Gap** | Fine-tune spacing between Scroll Info and Layout lines. |
-| **Colors** | Toggle adaptive colors (Green/Orange/Red) based on performance. |
+| **Colors** | Toggle colour performance indicators, see [below for more info](https://github.com/frussif/frupre/tree/modularstats?tab=readme-ov-file#-adaptive-colors). |
 | **Speed Type** | Toggle between `XY` (Horizontal) or `XYZ` (3D) velocity. |
 | **HUD Type** | Toggle between HUD and DHUD, DHUD offers (much) bigger and clearer text. |
 
@@ -55,11 +55,11 @@ The HUD dynamically changes color based on your performance:
 * **Frames on Ground (FOG):**
   * **1-2:** Green (Perfect)
   * **3:** Orange (Decent)
-  * **4+:** Red (Slow)
+  * **4+:** Red (Bad)
 
 * **Speed (Max Speed before jumping):**
-  * **300+:** Blue (Speed too high)
+  * **300+:** Blue/Dark Blue (Speed too high)
   * **280+:** Green (Perfect)
-  * **240+:** Cyan (Good)
+  * **240+:** Cyan/Lighter Blue (Good)
   * **220+:** Yellow (Bad)
   * **Below 220:** Red (Terrible)

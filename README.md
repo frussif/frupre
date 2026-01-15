@@ -21,10 +21,10 @@ Type **/frupre** or **!frupre** in chat to open the settings menu.
 | **Mode** | Detection mode: `Off`, `Jump`, `Duck`, or `Both`. |
 | **Scroll Info** | Toggle the scroll count line (e.g., `12 [3]`). |
 | **HUD Height** | Vertical position adjustment (0-20 scale). |
-| **Gap** | Fine-tune spacing between Scroll Info and Layout lines. |
+| **Scrollinfo Gap** | Fine-tune spacing between Scroll Info and Layout lines. |
 | **Colors** | Toggle adaptive colors (Green/Orange/Red) based on performance. |
 | **Speed Type** | Toggle between `XY` (Horizontal) or `XYZ` (3D) velocity. |
-| **DHUD** | Toggle ON/OFF, DHUD offers bigger and clearer text. |
+| **HUD Type** | Toggle between HUD and DHUD, DHUD offers (much) bigger and clearer text. |
 
 ### Modular HUD Layout
 Use the console command `frupre_layout` to design your own HUD.

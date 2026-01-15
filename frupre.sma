@@ -2,7 +2,7 @@
 #include <fakemeta>
 
 // Settings & Layout
-new g_pMode[33], g_pSType[33], g_pHeight[33], g_pColor[33], g_pEnabled[33], g_pScrollInfo[33], g_pGap[33]
+new g_pMode[33], g_pSType[33], g_pHeight[33], g_pColor[33], g_pEnabled[33], g_pScrollInfo[33], g_pGap[33], g_pHudType[33]
 new g_pLayout[33][128]
 
 // Movement Data
@@ -16,7 +16,7 @@ new Float:g_takeOff[33][3], Float:g_finalDist[33], g_strafes[33], g_lastSide[33]
 new Float:g_lastHudUpdate[33]
 
 public plugin_init() {
-    register_plugin("Frupre Pro Ultimate", "27.7", "Full-Modular")
+    register_plugin("Frupre Pro Ultimate", "27.8", "Full-Modular-HUD")
     register_forward(FM_PlayerPreThink, "fwd_PlayerPreThink")
     register_clcmd("say /frupre", "menu_fru")
     register_clcmd("say !frupre", "menu_fru")
@@ -24,7 +24,6 @@ public plugin_init() {
     register_concmd("frupre", "cmd_toggle", ADMIN_USER, "<0/1>")
     register_concmd("frupre_layout", "cmd_layout", ADMIN_USER, "<string>")
 
-    // Hot-Plug: Initialize for players already connected
     new players[32], num, id;
     get_players(players, num)
     for(new i = 0; i < num; i++) {
@@ -39,7 +38,7 @@ public client_putinserver(id) {
 
 public init_player(id) {
     g_pEnabled[id]=1; g_pMode[id]=3; g_pSType[id]=1; g_pHeight[id]=12; 
-    g_pColor[id]=1; g_pScrollInfo[id]=1; g_pGap[id]=13;
+    g_pColor[id]=1; g_pScrollInfo[id]=1; g_pGap[id]=13; g_pHudType[id]=0;
     copy(g_pLayout[id], 127, "FOG: %fog %n %premsg %n %speedstatic (%gain)")
     set_task(0.5, "load_data", id)
 }
@@ -111,6 +110,7 @@ public fwd_PlayerPreThink(id) {
         g_lastYaw[id] = ang[1]
     }
 
+    // Input Detection
     if ((buttons & IN_DUCK) && !(oldbuttons & IN_DUCK) && (g_pMode[id] & 2)) {
         if (fTime - g_lastScrollTime[id] > 0.05) { g_dCount[id] = 0; g_dFire[id] = 0; }
         g_dCount[id]++; if (g_dCount[id] >= 2) { if (g_lastType[id] == 1) { g_jCount[id] = 0; g_jFire[id] = 0; } g_lastType[id] = 2; }
@@ -126,7 +126,8 @@ public fwd_PlayerPreThink(id) {
         update_display(id, fTime)
     }
     
-    if (fTime - g_lastHudUpdate[id] >= 0.1) {
+    // Smooth Refresh Throttle (~30Hz)
+    if (fTime - g_lastHudUpdate[id] >= 0.033) {
         update_display(id, fTime)
         g_lastHudUpdate[id] = fTime
     }
@@ -136,8 +137,6 @@ public update_display(id, Float:fTime) {
     if (fTime - g_lastScrollTime[id] > 2.0) return
 
     new curFog = (g_lastType[id] == 1) ? g_jFinalFOG[id] : g_dFinalFOG[id]
-    
-    // Smart Hiding: Only show HUD if FOG is under 20 (active bhop/duck session)
     if (curFog >= 20) return
 
     static szBuffer[192], szVal[32]
@@ -160,6 +159,7 @@ public update_display(id, Float:fTime) {
 
     new Float:startY = 0.35 + (float(g_pHeight[id]-10) * 0.025)
     
+    // Scroll Info
     if (g_pScrollInfo[id] && curCount >= 2) {
         new r = 255, g = 255, b = 255
         if (g_pColor[id] > 0) {
@@ -167,10 +167,17 @@ public update_display(id, Float:fTime) {
             else if (curStep <= 4) { r = 255; g = 150; b = 0; }
             else { r = 255; g = 0; b = 0; }
         }
-        set_hudmessage(r, g, b, -1.0, startY, 0, 0.0, 0.2, 0.0, 0.0, 3)
-        show_hudmessage(id, "%d [%d]", curCount, curStep)
+        
+        if(g_pHudType[id] == 0) {
+            set_dhudmessage(r, g, b, -1.0, startY, 0, 0.0, 0.1, 0.0, 0.0)
+            show_dhudmessage(id, "%d [%d]", curCount, curStep)
+        } else {
+            set_hudmessage(r, g, b, -1.0, startY, 0, 0.0, 0.1, 0.0, 0.0, 2)
+            show_hudmessage(id, "%d [%d]", curCount, curStep)
+        }
     }
 
+    // Main Stats
     copy(szBuffer, 191, g_pLayout[id])
     replace_all(szBuffer, 191, "%n", "^n")
     
@@ -193,8 +200,13 @@ public update_display(id, Float:fTime) {
     num_to_str(g_finalStrafes[id] + (g_finalStrafes[id] > 0 ? 1 : 0), szVal, 31); replace_all(szBuffer, 191, "%strafes", szVal)
     formatex(szVal, 31, "%.1f", g_finalDist[id]); replace_all(szBuffer, 191, "%dist", szVal)
 
-    set_hudmessage(r2, g2, b2, -1.0, startY + (float(g_pGap[id]) / 1000.0), 0, 0.0, 0.2, 0.0, 0.0, 4)
-    show_hudmessage(id, szBuffer)
+    if(g_pHudType[id] == 0) {
+        set_dhudmessage(r2, g2, b2, -1.0, startY + (float(g_pGap[id]) / 1000.0), 0, 0.0, 0.1, 0.0, 0.0)
+        show_dhudmessage(id, szBuffer)
+    } else {
+        set_hudmessage(r2, g2, b2, -1.0, startY + (float(g_pGap[id]) / 1000.0), 0, 0.0, 0.1, 0.0, 0.0, 1)
+        show_hudmessage(id, szBuffer)
+    }
 }
 
 calculate_speed(id) {
@@ -213,9 +225,10 @@ public menu_fru(id) {
     formatex(tmp, 63, "Colors: %s", colorLabels[g_pColor[id]]); menu_additem(menu, tmp) 
     formatex(tmp, 63, "HUD Height: \y%d \r(-)", g_pHeight[id]); menu_additem(menu, tmp) 
     formatex(tmp, 63, "HUD Height: \y%d \y(+)", g_pHeight[id]); menu_additem(menu, tmp) 
-    formatex(tmp, 63, "Gap: \y%.3f \r(-)", float(g_pGap[id]) / 1000.0); menu_additem(menu, tmp) 
-    formatex(tmp, 63, "Gap: \y%.3f \y(+)", float(g_pGap[id]) / 1000.0); menu_additem(menu, tmp) 
-    formatex(tmp, 63, "Speed Type: \y%s", g_pSType[id] == 1 ? "XY" : "XYZ"); menu_additem(menu, tmp)
+    formatex(tmp, 63, "Scrollinfo Gap: \y%.3f \r(-)", float(g_pGap[id]) / 1000.0); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "Scrollinfo Gap: \y%.3f \y(+)", float(g_pGap[id]) / 1000.0); menu_additem(menu, tmp) 
+    formatex(tmp, 63, "Speed Type: \y%s", g_pSType[id] == 1 ? "XY, Horizontal" : "XYZ"); menu_additem(menu, tmp)
+    formatex(tmp, 63, "HUD Type: \y%s", g_pHudType[id] == 0 ? "DHUD" : "HUD"); menu_additem(menu, tmp)
     menu_display(id, menu) 
 } 
 
@@ -227,10 +240,11 @@ public menu_handler(id, menu, item) {
         case 2: g_pScrollInfo[id] = !g_pScrollInfo[id] 
         case 3: { g_pColor[id]++; if(g_pColor[id]>2) g_pColor[id]=0; }
         case 4: { if(g_pHeight[id] > 0) g_pHeight[id]--; }
-        case 5: { if(g_pHeight[id] < 20) g_pHeight[id]++; }
+        case 5: { if(g_pHeight[id] < 30) g_pHeight[id]++; }
         case 6: { if(g_pGap[id] > 0) g_pGap[id]--; }
         case 7: { if(g_pGap[id] < 50) g_pGap[id]++; }
         case 8: g_pSType[id] = (g_pSType[id] == 1 ? 2 : 1)
+        case 9: g_pHudType[id] = (g_pHudType[id] == 0 ? 1 : 0)
     } 
     save_data(id); menu_destroy(menu); menu_fru(id); return PLUGIN_HANDLED 
 }
@@ -238,7 +252,7 @@ public menu_handler(id, menu, item) {
 public save_data(id) {
     new authid[32], vaultkey[64], vaultdata[256]
     get_user_authid(id, authid, 31); format(vaultkey, 63, "FRUPRE_%s", authid)
-    format(vaultdata, 255, "%d %d %d %d %d %d %d ^"%s^"", g_pEnabled[id], g_pMode[id], g_pScrollInfo[id], g_pHeight[id], g_pColor[id], g_pGap[id], g_pSType[id], g_pLayout[id])
+    format(vaultdata, 255, "%d %d %d %d %d %d %d %d ^"%s^"", g_pEnabled[id], g_pMode[id], g_pScrollInfo[id], g_pHeight[id], g_pColor[id], g_pGap[id], g_pSType[id], g_pHudType[id], g_pLayout[id])
     set_vaultdata(vaultkey, vaultdata)
 }
 
@@ -246,9 +260,9 @@ public load_data(id) {
     new authid[32], vaultkey[64], vaultdata[256]
     get_user_authid(id, authid, 31); format(vaultkey, 63, "FRUPRE_%s", authid)
     if (get_vaultdata(vaultkey, vaultdata, 255)) {
-        new v[7][4]
-        parse(vaultdata, v[0], 3, v[1], 3, v[2], 3, v[3], 3, v[4], 3, v[5], 3, v[6], 3, g_pLayout[id], 127)
+        new v[8][4]
+        parse(vaultdata, v[0], 3, v[1], 3, v[2], 3, v[3], 3, v[4], 3, v[5], 3, v[6], 3, v[7], 3, g_pLayout[id], 127)
         g_pEnabled[id]=str_to_num(v[0]); g_pMode[id]=str_to_num(v[1]); g_pScrollInfo[id]=str_to_num(v[2]);
-        g_pHeight[id]=str_to_num(v[3]); g_pColor[id]=str_to_num(v[4]); g_pGap[id]=str_to_num(v[5]); g_pSType[id]=str_to_num(v[6])
+        g_pHeight[id]=str_to_num(v[3]); g_pColor[id]=str_to_num(v[4]); g_pGap[id]=str_to_num(v[5]); g_pSType[id]=str_to_num(v[6]); g_pHudType[id]=str_to_num(v[7])
     }
 }

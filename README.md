@@ -24,6 +24,7 @@ Type **/frupre** or **!frupre** in chat to open the settings menu.
 | **Gap** | Fine-tune spacing between Scroll Info and Layout lines. |
 | **Colors** | Toggle adaptive colors (Green/Orange/Red) based on performance. |
 | **Speed Type** | Toggle between `XY` (Horizontal) or `XYZ` (3D) velocity. |
+| **DHUD** | Toggle ON/OFF, DHUD offers bigger and clearer text. |
 
 ### Modular HUD Layout
 Use the console command `frupre_layout` to design your own HUD.

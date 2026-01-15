@@ -1,45 +1,65 @@
-# Frupre Scroll Statistics
+# Frupre Pro Ultimate - modular edition
 
-A precise movement utility for Counter-Strike 1.6 that tracks scroll input timing, Frames On Ground (FOG), and real-time velocity.
+A professional-grade movement utility for Counter-Strike 1.6. Frupre offers a fully customizable modular HUD, tracking scroll timing, Frames On Ground (FOG), and advanced jump mechanics like Gain, Sync, and Overlaps.
 
-Kind of an alternative to kzrush's /showpre, also shows scroll step count.
+It serves as a powerful, modern alternative to `showpre`, featuring unique **Smart Hiding** logic to keep your screen clean during normal gameplay.
 
-Download the compiled plugin here [https://github.com/frussif/frupre/blob/main/frupre.amxx](https://github.com/frussif/frupre/raw/refs/heads/main/frupre.amxx).
+## 🚀 Installation
+1. Download [frupre.amxx](https://github.com/frussif/frupre/raw/refs/heads/modularstats/frupre.amxx)
+2. Place it in `cstrike/addons/amxmodx/plugins/`.
+3. Add `frupre.amxx` to a new line in `cstrike/addons/amxmodx/configs/plugins.ini`.
 
 ## ⚙️ Configuration
-The plugin is fully menu-driven. Type **/frupre** or **!frupre** in chat to configure your personal settings. Settings are saved in your cstrike folder under "frupre_save.txt".
+The plugin features a hybrid configuration system. Use the **Chat Menu** for general toggles and the **Console Command** for advanced HUD design.
 
-# Frupre Pro Ultimate - Configuration Options
+### Chat Menu
+Type **/frupre** or **!frupre** in chat to open the settings menu.
 
-Settings are automatically saved whenever an option is changed.
+| Option | Description |
+| :--- | :--- |
+| **Plugin** | Global toggle (On/Off). |
+| **Mode** | Detection mode: `Off`, `Jump`, `Duck`, or `Both`. |
+| **Scroll Info** | Toggle the scroll count line (e.g., `12 [3]`). |
+| **HUD Height** | Vertical position adjustment (0-20 scale). |
+| **Scrollinfo Gap** | Fine-tune spacing between Scroll Info and Layout lines. |
+| **Colors** | Toggle adaptive colors (Green/Orange/Red) based on performance. |
+| **Speed Type** | Toggle between `XY` (Horizontal) or `XYZ` (3D) velocity. |
+| **HUD Type** | Toggle between HUD and DHUD, DHUD offers (much) bigger and clearer text. |
 
-| Option | Default | Description |
-| :--- | :--- | :--- |
-| **Plugin** | `On` | Global toggle for the entire plugin. |
-| **Mode** | `Both` | Cycles through `Off`, `Jump`, `Duck`, or `Both` (J+D) detection. |
-| **Scroll Info** | `On` | Toggle the scroll count line (e.g., `12 [3]`). |
-| **FOG** | `On` | Toggle the FOG (Frames On Ground) display. |
-| **Speed** | `Live` | `Off`, `Live` (continuous), or `Static` (shows max speed on landing, as well as gain in brackets). |
-| **Stats** | `On` | Toggle extra movement stats (Sync/Gain/Dist). |
-| **HUD Height** | `12` | Adjust HUD vertical position (0-20 scale). |
-| **Scrollinfo Gap** | `0.013` | Fine-tune the vertical spacing between Scroll Info and Stats to fix overlap issues on lower resolutions. |
-| **Speed Type** | `XY` | `XY` for horizontal speed, `XYZ` for true 3D speed. |
-| **HUD Type** | `RGB` | `CenterPrint` (White) or `RGB HUD` (Multi-color). |
-| **Colors** | `On` | Toggle adaptive colors (Green/Orange/Red) based on FOG/Steps. |
+### Modular HUD Layout
+Use the console command `frupre_layout` to design your own HUD.
+**Default:** `frupre_layout "%speedstatic (%gain) [%fog]%n%strafesx %sync%% [%overlap/%deadair]%n%dist"`
 
-FOG/Speed/Stats are in the same channel, so they'll show the same colour based on the FOG.
+**Available Tags:**
+* `%fog`: Frames on Ground.
+* `%gain`: Speed gained during the jump.
+* `%speedstatic`: Max velocity at the moment of the jump/duck.
+* `%speed`: Live real-time velocity.
+* `%premsg`: Speed quality text (e.g., "Perfect", "Good", "Bad").
+* `%strafes`: Number of strafes performed in the jump.
+* `%sync`: Strafe synchronization percentage.
+* `%overlap`: Frames where both A+D were held.
+* `%deadair`: Frames where no strafe keys were held.
+* `%dist`: Jump distance.
+* `%n`: New line.
 
-For FOG 1-2 the colour is green, for 3 it's yellow, 4 and up red.
-The FOG display can be turned off, the colours will still represent the FOG.
+---
+### 🎨 Adaptive Colors
+The HUD dynamically changes color based on your performance:
 
-For the scroll info: Steps 1-2 are green, 3-4 yellow, 5 and up red.
+* **Scroll Steps (Timing):**
+  * **1-2:** Green (Perfect)
+  * **3-4:** Orange (Decent)
+  * **5+:** Red (Slow)
 
-## 🕹️ HUD Layout
-FOG 1-2 for the FOG/Speed/Stats are green, 3 is yellow, 4 and up red.
-For the scrollinfo: Steps 1-2 are green, 3-4 yellow, 5 and up red.
+* **Frames on Ground (FOG):**
+  * **1-2:** Green (Perfect)
+  * **3:** Orange (Decent)
+  * **4+:** Red (Slow)
 
-```text
-      12 [3]        <- Total scrolls [The specific scroll that triggered jump/duck]
-      FOG: 2        <- Frames on ground (1 = Perfect, 2 = Good)
-     250 (30)       <- Live speed or Landing Speed (Gain in brackets)
- 85% | 2/1 | 240.5  <- Sync % | Overlap/Dead frames | Jump Distance
+* **Speed (Max Speed before jumping):**
+  * **300+:** Blue (Speed too high)
+  * **280+:** Green (Perfect)
+  * **240+:** Cyan (Good)
+  * **220+:** Yellow (Bad)
+  * **Below 220:** Red (Terrible)

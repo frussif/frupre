@@ -44,6 +44,7 @@ Use the console command `frupre_layout` to design your own HUD.
 * `%n`: New line.
 
 ---
+
 ### 🎨 Adaptive Colors
 The HUD dynamically changes color based on your performance:
 

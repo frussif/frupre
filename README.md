@@ -27,7 +27,7 @@ Type **/frupre** or **!frupre** in chat to open the settings menu.
 | **HUD Type** | Toggle between HUD and DHUD, DHUD offers (much) bigger and clearer text. |
 
 ### Modular HUD Layout
-Use the console command `frupre_layout` to design your own HUD.
+Use the console command `frupre_layout` to design your own HUD.  
 **Default:** `frupre_layout "%speedstatic (%gain) [%fog]%n%strafesx %sync%% [%overlap/%deadair]%n%dist"`
 
 **Available Tags:**
@@ -45,6 +45,7 @@ Use the console command `frupre_layout` to design your own HUD.
 
 ---
 
+<a id="adaptive-colors"></a>
 ### 🎨 Adaptive Colors
 The HUD dynamically changes color based on your performance:
 
